@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: peluqueria
+      POSTGRES_PASSWORD: peluqueria
+      POSTGRES_DB: peluqueria
+    ports:
+      - "5432:5432" # útil para desarrollo local fuera de Docker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U peluqueria -d peluqueria"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy # espera a que PostgreSQL acepte conexiones
+    environment:
+      # Los valores salen del .env si existe; si no, se usan estos por defecto.
+      SECRET_KEY: ${SECRET_KEY:-dev-only-secret-key-change-me-in-production-0000}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      DATABASE_URL: postgres://peluqueria:peluqueria@db:5432/peluqueria
+      TIME_ZONE: ${TIME_ZONE:-America/Argentina/Buenos_Aires}
+      CANCELLATION_MIN_HOURS: ${CANCELLATION_MIN_HOURS:-24}
+      SLOT_STEP_MINUTES: ${SLOT_STEP_MINUTES:-15}
+
+volumes:
+  pgdata:
