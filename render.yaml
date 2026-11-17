@@ -1,0 +1,31 @@
+# Blueprint de Render: define la base PostgreSQL y el servicio web con un solo archivo.
+# Uso: en Render, "New > Blueprint" y elegir este repositorio.
+databases:
+  - name: peluapp-db
+    databaseName: peluapp
+    user: peluapp
+    plan: free
+
+services:
+  - type: web
+    name: peluapp
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/docs/
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: peluapp-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: HTTPS_ONLY
+        value: "true"
+      # Carga datos de ejemplo al arrancar (idempotente).
+      - key: SEED_DEMO
+        value: "true"
+      # Contraseña del administrador demo: se carga a mano en el panel de Render.
+      - key: SEED_ADMIN_PASSWORD
+        sync: false

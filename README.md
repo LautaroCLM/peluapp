@@ -148,6 +148,9 @@ Ver [.env.example](.env.example).
 | `TIME_ZONE` | Zona en la que se interpretan los horarios laborales | `America/Argentina/Buenos_Aires` |
 | `CANCELLATION_MIN_HOURS` | Horas mínimas de anticipación para que un cliente cancele | `24` |
 | `SLOT_STEP_MINUTES` | Granularidad de los horarios ofrecidos | `15` |
+| `HTTPS_ONLY` | Fuerza HTTPS, cookies seguras y HSTS (producción) | `False` |
+| `CSRF_TRUSTED_ORIGINS` | Orígenes confiables extra, separados por coma | — |
+| `SEED_DEMO` | Si es `true`, carga los datos de ejemplo al arrancar el contenedor | — |
 
 ## Endpoints
 
@@ -274,6 +277,19 @@ curl -X POST http://localhost:8000/api/services/ \
 # Confirmar un turno pendiente (con el seed, el 4 está pendiente)
 curl -X POST http://localhost:8000/api/appointments/4/confirm/ -H "Authorization: Bearer $ADMIN"
 ```
+
+## Despliegue en Render
+
+El archivo [render.yaml](render.yaml) define el servicio web (Docker) y una base PostgreSQL gestionada.
+
+1. En Render: **New > Blueprint** y elegir este repositorio.
+2. Cuando lo pida, cargar el secreto `SEED_ADMIN_PASSWORD` (contraseña del administrador de la demo).
+3. Render construye la imagen, aplica las migraciones, carga los datos de ejemplo (`SEED_DEMO=true`) y
+   publica la API en una URL `https://<servicio>.onrender.com`. La documentación queda en `/api/docs/`.
+
+Notas: en el plan gratuito el servicio se duerme tras un rato sin tráfico (la primera request tarda unos
+segundos) y la base gratuita tiene vencimiento; conviene revisar los límites vigentes en Render.
+La migración inicial activa la extensión `btree_gist`, que PostgreSQL permite crear sin ser superusuario.
 
 ## Decisiones técnicas
 
