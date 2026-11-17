@@ -49,3 +49,16 @@ def monday_hours(barber):
     return WorkingHours.objects.create(
         barber=barber, weekday=0, start_time=time(9, 0), end_time=time(18, 0)
     )
+
+
+@pytest.fixture
+def auth_client():
+    """Devuelve un APIClient autenticado como el usuario dado."""
+    from rest_framework.test import APIClient
+
+    def _make(user):
+        c = APIClient()
+        c.force_authenticate(user=user)
+        return c
+
+    return _make
