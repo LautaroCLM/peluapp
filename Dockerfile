@@ -23,4 +23,5 @@ USER appuser
 EXPOSE 8000
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# Render inyecta PORT; en local usa 8000. gunicorn toma la cantidad de workers de WEB_CONCURRENCY.
+CMD ["sh", "-c", "gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
