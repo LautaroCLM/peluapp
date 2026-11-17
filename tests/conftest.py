@@ -62,3 +62,10 @@ def auth_client():
         return c
 
     return _make
+
+
+@pytest.fixture(autouse=True)
+def fast_password_hasher(settings):
+    """PBKDF2 es lento a propósito; en tests lo reemplazamos por MD5 para
+    que crear usuarios y hacer login no domine el tiempo de la suite."""
+    settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
