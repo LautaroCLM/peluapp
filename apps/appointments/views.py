@@ -67,6 +67,9 @@ class AppointmentViewSet(
     def get_queryset(self):
         # Regla 5: el cliente solo ve sus turnos; el administrador ve todos.
         # Los ajenos responden 404 (no se revela que existen).
+        # drf-spectacular genera el schema sin usuario real: evitamos fallar ahí.
+        if getattr(self, "swagger_fake_view", False):
+            return Appointment.objects.none()
         qs = Appointment.objects.select_related("barber", "service", "client")
         user = self.request.user
         if not user.is_admin_role:
