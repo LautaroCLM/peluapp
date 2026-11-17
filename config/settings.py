@@ -21,6 +21,25 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
+# Render define RENDER_EXTERNAL_HOSTNAME con el dominio público del servicio.
+RENDER_HOST = env("RENDER_EXTERNAL_HOSTNAME", default="")
+if RENDER_HOST:
+    ALLOWED_HOSTS = [*ALLOWED_HOSTS, RENDER_HOST]
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+if RENDER_HOST:
+    CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, f"https://{RENDER_HOST}"]
+
+# Seguridad HTTPS: se activa con HTTPS_ONLY=true (producción detrás del proxy de Render).
+# Queda apagado por defecto para poder correr en http://localhost con Docker.
+if env.bool("HTTPS_ONLY", default=False):
+    # Render termina TLS y reenvía el esquema original en este header.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
