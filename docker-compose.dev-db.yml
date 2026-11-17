@@ -1,0 +1,16 @@
+# Solo la base de datos, para desarrollo local sin Docker para la app.
+# El docker-compose.yml completo (app + db) llega en la etapa de Docker.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: peluqueria
+      POSTGRES_PASSWORD: peluqueria
+      POSTGRES_DB: peluqueria
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
