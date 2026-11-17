@@ -33,6 +33,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
+    # Apps propias
+    "apps.accounts",
+    "apps.catalog",
+    "apps.appointments",
 ]
 
 MIDDLEWARE = [
@@ -83,6 +87,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+AUTH_USER_MODEL = "accounts.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
